@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Spark smoke test</title></head>
+<body>
+  <h1>Spark smoke test</h1>
+  <pre id="out">running...</pre>
+  <div id="cartDrawer" class="drawer" aria-hidden="true">
+    <div class="drawer__scrim" data-close-cart></div>
+    <aside class="drawer__panel">
+      <div class="drawer__head">
+        <h3>Your cart <span id="drawerCount"></span></h3>
+        <button class="icon-btn" type="button" data-close-cart>&times;</button>
+      </div>
+      <div class="drawer__body" id="cartBody"></div>
+      <div class="drawer__foot">
+        <div class="sum"><span>Subtotal</span><strong id="cartSubtotal">$0.00</strong></div>
+        <div class="sum"><span>Shipping</span><strong id="cartShipping">$0.00</strong></div>
+        <div class="sum"><span>Tax (8%)</span><strong id="cartTax">$0.00</strong></div>
+        <div class="sum"><span>Total</span><strong id="cartTotal">$0.00</strong></div>
+        <div class="hint" id="storageHint" style="display:none"></div>
+      </div>
+    </aside>
+  </div>
+  <button id="cartButton" class="cart-btn">cart <span id="cartCount" class="cart-btn__count">0</span></button>
+  <div id="toastHost"></div>
+
+  <script src="js/util.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    var lines = [];
+    function ok(name, pass, detail) {
+      lines.push((pass ? 'PASS  ' : 'FAIL  ') + name + (detail ? '  -> ' + detail : ''));
+    }
+    function money(n) { return '$' + Number(n).toFixed(2); }
+  </script>
+  <script src="js/_smoke-tests.js"></script>
+</body>
+</html>

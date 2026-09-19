@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checkout &mdash; Spark Store</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9889;</text></svg>" />
+</head>
+<body>
+
+  <!-- ============================ HEADER ============================ -->
+  <header class="header">
+    <div class="wrap header__inner">
+      <a class="logo" href="index.html">
+        <span class="logo__mark">&#9889;</span>
+        <span>Spark<span class="muted">Store</span></span>
+      </a>
+      <nav class="nav">
+        <a href="index.html">Shop</a>
+        <a href="dashboard.html">Sales Dashboard</a>
+        <a class="is-active" href="checkout.html">Checkout</a>
+      </nav>
+      <div class="search" style="visibility:hidden"></div>
+      <span class="badge badge--info">Secure demo checkout</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- ========================== PAGE HEAD ========================== -->
+    <section class="page-head">
+      <span class="eyebrow">Step 2 of 2</span>
+      <h2>Complete your order</h2>
+      <div class="steps">
+        <span>&#10003; Cart</span>
+        <span>&rarr;</span>
+        <b>Details &amp; payment</b>
+        <span>&rarr;</span>
+        <span id="stepDone" style="opacity:.5">Receipt</span>
+      </div>
+    </section>
+
+    <!-- Empty-cart notice: shown by js/checkout.js when the cart is empty -->
+    <div id="emptyNotice" class="panel hidden" style="text-align:center;padding:40px">
+      <div class="empty__icon">&#128722;</div>
+      <h3>Your cart is empty</h3>
+      <p class="muted">Add a few products before checking out.</p>
+      <a class="btn" href="index.html">Back to the store</a>
+    </div>
+
+    <!-- ========================= CHECKOUT FORM ======================== -->
+    <form id="checkoutForm" class="checkout" novalidate>
+      <!-- ---------------------------- LEFT --------------------------- -->
+      <div>
+        <!-- 1. Contact -->
+        <section class="panel">
+          <div class="panel__title">
+            <span class="panel__num">1</span>
+            <h3 style="margin:0">Contact details</h3>
+          </div>
+          <div class="fields-2">
+            <label class="field">
+              <span>Full name *</span>
+              <input id="fullName" class="input" type="text" autocomplete="name" placeholder="Ada Lovelace" />
+              <span class="err" data-err-for="fullName"></span>
+            </label>
+            <label class="field">
+              <span>Email address *</span>
+              <input id="email" class="input" type="email" autocomplete="email" placeholder="ada@example.com" />
+              <span class="err" data-err-for="email"></span>
+            </label>
+          </div>
+          <label class="field">
+            <span>Phone number *</span>
+            <input id="phone" class="input" type="tel" autocomplete="tel" placeholder="+1 555 0134" />
+            <span class="err" data-err-for="phone"></span>
+          </label>
+        </section>
+
+        <!-- 2. Shipping address -->
+        <section class="panel">
+          <div class="panel__title">
+            <span class="panel__num">2</span>
+            <h3 style="margin:0">Shipping address</h3>
+          </div>
+          <label class="field">
+            <span>Street address *</span>
+            <input id="address" class="input" type="text" autocomplete="street-address" placeholder="12 Market Street, Apt 4B" />
+            <span class="err" data-err-for="address"></span>
+          </label>
+          <div class="fields-2">
+            <label class="field">
+              <span>City *</span>
+              <input id="city" class="input" type="text" autocomplete="address-level2" placeholder="Austin" />
+              <span class="err" data-err-for="city"></span>
+            </label>
+            <label class="field">
+              <span>Postal code *</span>
+              <input id="zip" class="input" type="text" autocomplete="postal-code" placeholder="78701" />
+              <span class="err" data-err-for="zip"></span>
+            </label>
+          </div>
+        </section>
+
+        <!-- 3. Payment method -->
+        <section class="panel">
+          <div class="panel__title">
+            <span class="panel__num">3</span>
+            <h3 style="margin:0">Payment method</h3>
+          </div>
+
+          <div class="pay-options" id="payOptions">
+            <label class="pay is-active">
+              <input type="radio" name="payment" value="card" checked />
+              <span class="pay__emoji">&#128179;</span>
+              <span class="pay__label">Card</span>
+            </label>
+            <label class="pay">
+              <input type="radio" name="payment" value="upi" />
+              <span class="pay__emoji">&#128241;</span>
+              <span class="pay__label">UPI</span>
+            </label>
+            <label class="pay">
+              <input type="radio" name="payment" value="cod" />
+              <span class="pay__emoji">&#128176;</span>
+              <span class="pay__label">Cash on delivery</span>
+            </label>
+          </div>
+
+          <!-- Card fields, hidden when another method is chosen -->
+          <div id="cardFields" style="margin-top:16px">
+            <label class="field">
+              <span>Card number *</span>
+              <input id="cardNumber" class="input" type="text" inputmode="numeric" maxlength="19"
+                     placeholder="4242 4242 4242 4242" />
+              <span class="err" data-err-for="cardNumber"></span>
+            </label>
+            <div class="fields-2">
+              <label class="field">
+                <span>Expiry (MM/YY) *</span>
+                <input id="cardExpiry" class="input" type="text" maxlength="5" placeholder="08/29" />
+                <span class="err" data-err-for="cardExpiry"></span>
+              </label>
+              <label class="field">
+                <span>CVV *</span>
+                <input id="cardCvv" class="input" type="password" maxlength="4" placeholder="123" />
+                <span class="err" data-err-for="cardCvv"></span>
+              </label>
+            </div>
+          </div>
+
+          <div id="upiFields" class="hidden">
+            <label class="field">
+              <span>UPI ID *</span>
+              <input id="upiId" class="input" type="text" placeholder="yourname@bank" />
+              <span class="err" data-err-for="upiId"></span>
+            </label>
+          </div>
+
+          <div id="codFields" class="hidden">
+            <div class="hint">Keep the exact amount ready. Payment will be marked as <b>pending</b> until delivery.</div>
+          </div>
+        </section>
+      </div>
+
+      <!-- --------------------------- RIGHT --------------------------- -->
+      <aside class="side">
+        <section class="panel">
+          <div class="panel__title"><h3 style="margin:0">Order summary</h3></div>
+          <div id="summaryItems"><!-- filled by js/checkout.js --></div>
+          <div class="sum"><span>Subtotal</span><strong id="sumSubtotal">$0.00</strong></div>
+          <div class="sum"><span>Discount</span><strong id="sumDiscount">-$0.00</strong></div>
+          <div class="sum"><span>Shipping</span><strong id="sumShipping">$0.00</strong></div>
+          <div class="sum"><span>Tax (8%)</span><strong id="sumTax">$0.00</strong></div>
+          <div class="sum sum--total"><span>Total</span><strong id="sumTotal">$0.00</strong></div>
+          <a class="link-btn" href="index.html" style="padding-left:0">&larr; Edit cart</a>
+        </section>
+
+        <!-- Discount code -->
+        <section class="panel">
+          <div class="panel__title"><h3 style="margin:0">Discount code</h3></div>
+          <div class="row" style="gap:8px;flex-wrap:nowrap">
+            <input id="couponInput" class="input" type="text" placeholder="SPARK10" style="flex:1" />
+            <button id="applyCouponBtn" class="btn btn--sm btn--ghost" type="button">Apply</button>
+          </div>
+          <div id="couponMsg" class="small muted" style="margin-top:8px">
+            Try <b>SPARK10</b>, <b>LEARN20</b> or <b>WELCOME5</b>.
+          </div>
+        </section>
+
+        <!-- Order note + place order -->
+        <section class="panel">
+          <label class="field">
+            <span>Order note (optional)</span>
+            <textarea id="orderNote" class="input" rows="3" placeholder="Leave with the front desk"></textarea>
+          </label>
+          <label class="row small" style="align-items:flex-start;gap:8px">
+            <input id="agree" type="checkbox" checked />
+            <span>I understand this is a demo store and no real payment is taken.</span>
+          </label>
+          <span class="err" data-err-for="agree"></span>
+          <button id="placeOrderBtn" class="btn btn--block" type="submit" style="margin-top:14px">
+            Place order &mdash; <span id="payTotal">$0.00</span>
+          </button>
+          <div class="hint">Your order is written to the local sales store. Open the dashboard to see it.</div>
+        </section>
+      </aside>
+    </form>
+
+    <!-- ====================== SUCCESS RECEIPT ====================== -->
+    <section id="receiptPanel" class="panel receipt hidden" style="margin-bottom:60px">
+      <div class="receipt__tick">&#10003;</div>
+      <h2 style="margin-bottom:4px">Thank you, <span id="rcName">friend</span>!</h2>
+      <p class="muted">Your order has been stored. Keep this reference:</p>
+      <div class="badge badge--ok mono" id="rcId" style="font-size:1rem;padding:8px 16px">SP-0000-0000</div>
+      <div class="panel" style="max-width:470px;margin:22px auto;text-align:left">
+        <dl class="kv" id="rcDetails"></dl>
+      </div>
+      <div class="row" style="justify-content:center">
+        <a class="btn" href="dashboard.html">See it in the sales dashboard</a>
+        <a class="btn btn--ghost" href="index.html">Continue shopping</a>
+        <button id="printReceiptBtn" class="btn btn--ghost" type="button">Print receipt</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer__bottom" style="margin-top:0;border-top:0;padding-top:0">
+        <span>&copy; <span id="year"></span> SparkStore &mdash; built for learning.</span>
+        <span>Demo data only. No real payments are processed.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toastHost"></div>
+
+  <!-- =========================== SCRIPTS =========================== -->
+  <script src="js/util.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/checkout.js"></script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sales Dashboard &mdash; Spark Store</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9889;</text></svg>" />
+</head>
+<body>
+
+  <!-- ============================ HEADER ============================ -->
+  <header class="header">
+    <div class="wrap header__inner">
+      <a class="logo" href="index.html">
+        <span class="logo__mark">&#9889;</span>
+        <span>Spark<span class="muted">Store</span></span>
+      </a>
+      <nav class="nav">
+        <a href="index.html">Shop</a>
+        <a class="is-active" href="dashboard.html">Sales Dashboard</a>
+        <a href="checkout.html">Checkout</a>
+      </nav>
+      <div class="search" style="visibility:hidden"></div>
+      <a class="btn btn--sm" href="index.html">&#128722; Back to store</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- ========================== PAGE HEAD ========================== -->
+    <section class="page-head">
+      <div class="spread">
+        <div>
+          <span class="eyebrow">Business &middot; stored sales</span>
+          <h2>Sales dashboard</h2>
+          <p id="dbSubtitle">Every order placed on the store is recorded here.</p>
+        </div>
+        <div class="row">
+          <button id="seedBtn" class="btn btn--ghost btn--sm" type="button">&#10024; Load demo sales</button>
+          <button id="exportBtn" class="btn btn--ghost btn--sm" type="button">&#11015; Export CSV</button>
+          <button id="clearBtn" class="btn btn--danger btn--sm" type="button">&#128465; Clear all</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ KPIs ============================= -->
+    <section class="kpis section" style="padding-top:10px">
+      <article class="kpi kpi--brand">
+        <div class="kpi__label">Total revenue</div>
+        <div class="kpi__value" id="kpiRevenue">$0.00</div>
+        <div class="kpi__foot" id="kpiRevenueFoot">Net of refunds</div>
+      </article>
+      <article class="kpi">
+        <div class="kpi__label">Orders stored</div>
+        <div class="kpi__value" id="kpiOrders">0</div>
+        <div class="kpi__foot muted" id="kpiOrdersFoot">All time</div>
+      </article>
+      <article class="kpi">
+        <div class="kpi__label">Items sold</div>
+        <div class="kpi__value" id="kpiItems">0</div>
+        <div class="kpi__foot muted" id="kpiItemsFoot">Units across all orders</div>
+      </article>
+      <article class="kpi">
+        <div class="kpi__label">Average order value</div>
+        <div class="kpi__value" id="kpiAvg">$0.00</div>
+        <div class="kpi__foot muted" id="kpiPending">Pending (COD): $0.00</div>
+      </article>
+    </section>
+
+    <!-- ====================== CHART + TOP PRODUCTS =================== -->
+    <section class="dash-grid">
+      <div class="panel">
+        <div class="panel__title"><h3 style="margin:0">Revenue &mdash; last 7 days</h3></div>
+        <div class="chart" id="chart"><!-- bars injected by js/dashboard.js --></div>
+      </div>
+      <div class="panel">
+        <div class="panel__title"><h3 style="margin:0">Best sellers</h3></div>
+        <ul class="rank" id="topProducts"><!-- injected --></ul>
+        <div class="hint" id="methodHint"></div>
+      </div>
+    </section>
+
+    <!-- ========================= SALES TABLE ========================= -->
+    <section class="section" style="padding-bottom:0">
+      <div class="panel">
+        <div class="spread" style="margin-bottom:14px">
+          <div>
+            <h3 style="margin:0">Sales records</h3>
+            <p class="small muted" id="tableCount" style="margin:0">0 orders</p>
+          </div>
+          <div class="toolbar" style="margin:0">
+            <input id="searchSales" class="input" type="search" placeholder="Search order, customer, product" />
+            <select id="statusFilter" class="input" aria-label="Filter by status">
+              <option value="">All statuses</option>
+              <option value="completed">Completed</option>
+              <option value="refunded">Refunded</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <select id="sortSales" class="input" aria-label="Sort sales">
+              <option value="date-desc">Newest first</option>
+              <option value="date-asc">Oldest first</option>
+              <option value="total-desc">Highest value</option>
+              <option value="total-asc">Lowest value</option>
+              <option value="customer">Customer A&ndash;Z</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th class="text-right">Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="salesBody"><!-- rows injected by js/dashboard.js --></tbody>
+          </table>
+        </div>
+
+        <div id="tableEmpty" class="empty hidden" style="margin-top:16px;border:1px dashed var(--line)">
+          <div class="empty__icon">&#128203;</div>
+          <h3>No sales recorded yet</h3>
+          <p class="muted">Place an order from the storefront, or click &ldquo;Load demo sales&rdquo; above.</p>
+          <a class="btn btn--sm" href="index.html">Go to storefront</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== ORDER DETAIL TEMPLATE ==================== -->
+  <div class="drawer" id="orderDrawer" aria-hidden="true">
+    <div class="drawer__scrim" data-close-order></div>
+    <aside class="drawer__panel" role="dialog" aria-label="Order details">
+      <div class="drawer__head">
+        <h3 style="margin:0">Order <span class="mono" id="odId"></span></h3>
+        <button class="icon-btn" type="button" data-close-order aria-label="Close">&times;</button>
+      </div>
+      <div class="drawer__body">
+        <div id="odItems"></div>
+        <div style="margin-top:16px">
+          <div class="sum"><span>Subtotal</span><strong id="odSubtotal">$0.00</strong></div>
+          <div class="sum"><span>Discount</span><strong id="odDiscount">$0.00</strong></div>
+          <div class="sum"><span>Shipping</span><strong id="odShipping">$0.00</strong></div>
+          <div class="sum"><span>Tax</span><strong id="odTax">$0.00</strong></div>
+          <div class="sum sum--total"><span>Total</span><strong id="odTotal">$0.00</strong></div>
+        </div>
+        <h4 style="margin-top:22px">Customer</h4>
+        <dl class="kv" id="odCustomer"></dl>
+        <h4 style="margin-top:18px">Payment</h4>
+        <dl class="kv" id="odPayment"></dl>
+        <h4 style="margin-top:18px">Change status</h4>
+        <div class="row">
+          <button class="btn btn--sm btn--ok" type="button" data-status="completed">Mark completed</button>
+          <button class="btn btn--sm btn--ghost" type="button" data-status="refunded">Refund</button>
+          <button class="btn btn--sm btn--danger" type="button" data-status="cancelled">Cancel</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer__bottom" style="margin-top:0;border-top:0;padding-top:0">
+        <span>&copy; <span id="year"></span> SparkStore &mdash; built for learning.</span>
+        <span id="storageNote">Sales are stored locally in this browser.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toastHost"></div>
+
+  <!-- =========================== SCRIPTS =========================== -->
+  <script src="js/util.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
